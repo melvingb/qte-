@@ -680,7 +680,6 @@ class main_listener implements EventSubscriberInterface
 		}
 		$this->db->sql_freeresult($result);
 
-
 		// No destination forum exists
 		if (empty($dest_forum_ids))
 		{
