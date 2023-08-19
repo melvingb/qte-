@@ -1,0 +1,10 @@
+{% if not JXTOOLSJS %}
+	{% INCLUDEJS '@kaileymsnay_qte/jxtools.js' %}
+	{% DEFINE JXTOOLSJS = true %}
+{% endif %}
+
+{% if topicrow.TOPIC_ATTRIBUTE or searchresults.TOPIC_ATTRIBUTE %}
+<li id="list_inner_hidden_container" jxdom-closest="div.list-inner" jxdom-find="a.topictitle" jxdom-action="before">
+<span>{% if topicrow.TOPIC_ATTRIBUTE %}{{ topicrow.TOPIC_ATTRIBUTE }}{% else %}{{ searchresults.TOPIC_ATTRIBUTE }}{% endif %} </span>
+</li>
+{% endif %}
