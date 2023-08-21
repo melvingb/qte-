@@ -35,7 +35,10 @@ if (empty($lang) || !is_array($lang))
 //
 
 $lang = array_merge($lang, [
-	'QTE_ADD'	=> 'Create new attribute',
+	'QTE_ADD'			=> 'Create attribute',
+	'QTE_ADD_EXPLAIN'	=> 'Here you can define the new attribute properties.',
+	'QTE_EDIT'			=> 'Edit attribute',
+	'QTE_EDIT_EXPLAIN'	=> 'Here you can modify the properties of the selected attribute.',
 
 	'QTE_FIELDS'					=> 'Attribute fields',
 	'QTE_TYPE'						=> 'Attribute type',

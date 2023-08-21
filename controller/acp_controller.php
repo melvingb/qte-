@@ -235,6 +235,21 @@ class acp_controller
 					$attr = $this->_get_attr_info($attr_id);
 				}
 
+				if ($action == 'edit')
+				{
+					$this->template->assign_vars([
+						'QTE_ADD_EDIT'			=> $this->language->lang('QTE_EDIT'),
+						'QTE_ADD_EDIT_EXPLAIN'	=> $this->language->lang('QTE_EDIT_EXPLAIN'),
+					]);
+				}
+				else
+				{
+					$this->template->assign_vars([
+						'QTE_ADD_EDIT'			=> $this->language->lang('QTE_ADD'),
+						'QTE_ADD_EDIT_EXPLAIN'	=> $this->language->lang('QTE_ADD_EXPLAIN'),
+					]);
+				}
+
 				$this->qte_attr_select($attr_id);
 
 				$s_errors = !empty($errors);
