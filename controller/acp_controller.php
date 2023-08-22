@@ -553,7 +553,7 @@ class acp_controller
 			if ($clear_dest_perms)
 			{
 				$sql = 'DELETE FROM ' . $table . '
-					WHERE auth_option_id = ' . $new_id;
+					WHERE auth_option_id = ' . (int) $new_id;
 				$this->db->sql_query($sql);
 			}
 
