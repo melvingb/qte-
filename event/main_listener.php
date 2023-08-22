@@ -41,8 +41,8 @@ class main_listener implements EventSubscriberInterface
 	/** @var \phpbb\user */
 	protected $user;
 
-	/** @var array */
-	protected $tables;
+	/** @var string */
+	protected $table_prefix;
 
 	/** @var \kaileymsnay\qte\qte */
 	protected $qte;
@@ -66,11 +66,11 @@ class main_listener implements EventSubscriberInterface
 	 * @param \phpbb\request\request                      $request
 	 * @param \phpbb\template\template                    $template
 	 * @param \phpbb\user                                 $user
-	 * @param array                                       $tables
+	 * @param string                                      $table_prefix
 	 * @param \kaileymsnay\qte\qte                        $qte
 	 * @param \kaileymsnay\qte\search\fulltext_attribute  $qte_search
 	 */
-	public function __construct(\phpbb\cache\driver\driver_interface $cache, \phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, \phpbb\log\log $log, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, $tables, \kaileymsnay\qte\qte $qte, \kaileymsnay\qte\search\fulltext_attribute $qte_search)
+	public function __construct(\phpbb\cache\driver\driver_interface $cache, \phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, \phpbb\log\log $log, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, $table_prefix, \kaileymsnay\qte\qte $qte, \kaileymsnay\qte\search\fulltext_attribute $qte_search)
 	{
 		$this->cache = $cache;
 		$this->db = $db;
@@ -79,7 +79,7 @@ class main_listener implements EventSubscriberInterface
 		$this->request = $request;
 		$this->template = $template;
 		$this->user = $user;
-		$this->tables = $tables;
+		$this->table_prefix = $table_prefix;
 		$this->qte = $qte;
 		$this->qte_search = $qte_search;
 	}
@@ -196,7 +196,7 @@ class main_listener implements EventSubscriberInterface
 	public function display_forums_modify_row($event)
 	{
 		$sql = 'SELECT topic_id
-			FROM ' . $this->tables['posts'] . '
+			FROM ' . $this->table_prefix . 'posts
 			WHERE post_id = ' . (int) $event['row']['forum_last_post_id'];
 		$result = $this->db->sql_query($sql);
 		$topic_list = [];
@@ -215,11 +215,11 @@ class main_listener implements EventSubscriberInterface
 
 		$sql_ary['SELECT'] .= ', t.topic_attr_id, t.topic_attr_user, t.topic_attr_time';
 		$sql_ary['LEFT_JOIN'][] = [
-			'FROM'	=> [$this->tables['posts'] => 'p'],
+			'FROM'	=> [$this->table_prefix . 'posts' => 'p'],
 			'ON'	=> 'f.forum_last_post_id = p.post_id',
 		];
 		$sql_ary['LEFT_JOIN'][] = [
-			'FROM'	=> [$this->tables['topics'] => 't'],
+			'FROM'	=> [$this->table_prefix . 'topics' => 't'],
 			'ON'	=> 't.topic_id = p.topic_id',
 		];
 
@@ -237,7 +237,7 @@ class main_listener implements EventSubscriberInterface
 		if (isset($event['active_t_row']['topic_id']))
 		{
 			$sql = 'SELECT topic_attr_id, topic_attr_user, topic_attr_time
-				FROM ' . $this->tables['topics'] . '
+				FROM ' . $this->table_prefix . 'topics
 				WHERE topic_id = ' . (int) $event['active_t_row']['topic_id'];
 			$result = $this->db->sql_query($sql);
 			$row = $this->db->sql_fetchrow($result);
@@ -254,7 +254,7 @@ class main_listener implements EventSubscriberInterface
 	// ACP
 	public function delete_user_after($event)
 	{
-		$sql = 'UPDATE ' . $this->tables['topics'] . '
+		$sql = 'UPDATE ' . $this->table_prefix . 'topics
 			SET topic_attr_user = ' . ANONYMOUS . '
 			WHERE ' . $this->db->sql_in_set('topic_attr_user', $event['user_ids']);
 		$this->db->sql_query($sql);
@@ -656,7 +656,7 @@ class main_listener implements EventSubscriberInterface
 
 		// Check if source forum exists
 		$sql = 'SELECT forum_name
-			FROM ' . $this->tables['forums'] . '
+			FROM ' . $this->table_prefix . 'forums
 			WHERE forum_id = ' . (int) $src_forum_id;
 		$result = $this->db->sql_query($sql);
 		$src_forum_name = $this->db->sql_fetchfield('forum_name');
@@ -670,7 +670,7 @@ class main_listener implements EventSubscriberInterface
 
 		// Check if destination forums exists
 		$sql = 'SELECT forum_id, forum_name
-			FROM ' . $this->tables['forums'] . '
+			FROM ' . $this->table_prefix . 'forums
 			WHERE ' . $this->db->sql_in_set('forum_id', $dest_forum_ids);
 		$result = $this->db->sql_query($sql);
 		$dest_forum_ids = [];
@@ -687,7 +687,7 @@ class main_listener implements EventSubscriberInterface
 		}
 
 		// Get informations about acl options
-		$sql = 'SELECT auth_option_id FROM ' . $this->tables['acl_options'] . '
+		$sql = 'SELECT auth_option_id FROM ' . $this->table_prefix . 'acl_options
 			WHERE auth_option ' . $this->db->sql_like_expression($this->db->get_any_char() . '_qte_attr_' . $this->db->get_any_char());
 		$result = $this->db->sql_query($sql);
 
@@ -705,7 +705,7 @@ class main_listener implements EventSubscriberInterface
 
 		// Get informations about acl options
 		$sql = 'SELECT auth_option_id
-			FROM ' . $this->tables['acl_options'] . '
+			FROM ' . $this->table_prefix . 'acl_options
 			WHERE auth_option ' . $this->db->sql_like_expression($this->db->get_any_char() . '_qte_attr_' . $this->db->get_any_char());
 		$result = $this->db->sql_query($sql);
 		$acl_options_ids = [];
@@ -719,7 +719,7 @@ class main_listener implements EventSubscriberInterface
 
 		// Query acl users table for source forum data
 		$sql = 'SELECT user_id, auth_option_id, auth_role_id, auth_setting
-			FROM ' . $this->tables['acl_users'] . '
+			FROM ' . $this->table_prefix . 'acl_users
 			WHERE ' . $this->db->sql_in_set('auth_option_id', $acl_options_ids) . '
 				AND forum_id = ' . $src_forum_id;
 		$result = $this->db->sql_query($sql);
@@ -741,7 +741,7 @@ class main_listener implements EventSubscriberInterface
 
 		// Query acl groups table for source forum data
 		$sql = 'SELECT group_id, auth_option_id, auth_role_id, auth_setting
-			FROM ' . $this->tables['acl_groups'] . '
+			FROM ' . $this->table_prefix . 'acl_groups
 			WHERE ' . $this->db->sql_in_set('auth_option_id', $acl_options_ids) . '
 				AND forum_id = ' . $src_forum_id;
 		$result = $this->db->sql_query($sql);
@@ -766,19 +766,19 @@ class main_listener implements EventSubscriberInterface
 		if ($clear_dest_perms)
 		{
 			// Clear current permissions of destination forums
-			$sql = 'DELETE FROM ' . $this->tables['acl_users'] . '
+			$sql = 'DELETE FROM ' . $this->table_prefix . 'acl_users
 				WHERE ' . $this->db->sql_in_set('auth_option_id', $acl_options_ids) . '
 					AND ' . $this->db->sql_in_set('forum_id', $dest_forum_ids);
 			$this->db->sql_query($sql);
 
-			$sql = 'DELETE FROM ' . $this->tables['acl_groups'] . '
+			$sql = 'DELETE FROM ' . $this->table_prefix . 'acl_groups
 				WHERE ' . $this->db->sql_in_set('auth_option_id', $acl_options_ids) . '
 					AND ' . $this->db->sql_in_set('forum_id', $dest_forum_ids);
 			$this->db->sql_query($sql);
 		}
 
-		$this->db->sql_multi_insert($this->tables['acl_users'], $users_sql_ary);
-		$this->db->sql_multi_insert($this->tables['acl_groups'], $groups_sql_ary);
+		$this->db->sql_multi_insert($this->table_prefix . 'acl_users', $users_sql_ary);
+		$this->db->sql_multi_insert($this->table_prefix . 'acl_groups', $groups_sql_ary);
 
 		$this->db->sql_transaction('commit');
 

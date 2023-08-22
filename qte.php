@@ -48,8 +48,8 @@ class qte
 	/** @var string */
 	protected $php_ext;
 
-	/** @var array */
-	protected $tables;
+	/** @var string */
+	protected $table_prefix;
 
 	/** @var array */
 	private $_attr;
@@ -70,9 +70,9 @@ class qte
 	 * @param \phpbb\user                           $user
 	 * @param string                                $root_path
 	 * @param string                                $php_ext
-	 * @param array                                 $tables
+	 * @param string                                $table_prefix
 	 */
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\cache\driver\driver_interface $cache, \phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, \phpbb\log\log $log, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, $root_path, $php_ext, $tables)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\cache\driver\driver_interface $cache, \phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, \phpbb\log\log $log, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, $root_path, $php_ext, $table_prefix)
 	{
 		$this->auth = $auth;
 		$this->cache = $cache;
@@ -84,7 +84,7 @@ class qte
 		$this->user = $user;
 		$this->root_path = $root_path;
 		$this->php_ext = $php_ext;
-		$this->tables = $tables;
+		$this->table_prefix = $table_prefix;
 
 		$this->_get_attributes();
 	}
@@ -97,8 +97,8 @@ class qte
 		if (!empty($topic_list))
 		{
 			$sql = 'SELECT u.user_id, u.username, u.user_colour
-				FROM ' . $this->tables['users'] . ' u
-				LEFT JOIN ' . $this->tables['topics'] . ' t ON (u.user_id = t.topic_attr_user)
+				FROM ' . $this->table_prefix . 'users u
+				LEFT JOIN ' . $this->table_prefix . 'topics t ON (u.user_id = t.topic_attr_user)
 				WHERE ' . $this->db->sql_in_set('t.topic_id', array_map('intval', $topic_list)) . '
 					AND t.topic_attr_user <> ' . ANONYMOUS;
 			$result = $this->db->sql_query($sql);
@@ -130,7 +130,7 @@ class qte
 		if (!isset($this->_name[$user_id]))
 		{
 			$sql = 'SELECT user_id, username, user_colour
-				FROM ' . $this->tables['users'] . '
+				FROM ' . $this->table_prefix . 'users
 				WHERE user_id = ' . (int) $user_id;
 			$result = $this->db->sql_query($sql);
 			while ($row = $this->db->sql_fetchrow($result))
@@ -365,13 +365,13 @@ class qte
 			];
 		}
 
-		$sql = 'UPDATE ' . $this->tables['topics'] . '
+		$sql = 'UPDATE ' . $this->table_prefix . 'topics
 			SET ' . $this->db->sql_build_array('UPDATE', $fields) . '
 			WHERE topic_id = ' . (int) $topic_id;
 		$this->db->sql_query($sql);
 
 		$sql = 'SELECT topic_id
-			FROM ' . $this->tables['topics'] . '
+			FROM ' . $this->table_prefix . 'topics
 			WHERE topic_moved_id = ' . (int) $topic_id;
 		$result = $this->db->sql_query($sql);
 		$shadow_topic_id = (int) $this->db->sql_fetchfield('topic_id');
@@ -379,7 +379,7 @@ class qte
 
 		if (!empty($shadow_topic_id))
 		{
-			$sql = 'UPDATE ' . $this->tables['topics'] . '
+			$sql = 'UPDATE ' . $this->table_prefix . 'topics
 				SET ' . $this->db->sql_build_array('UPDATE', $fields) . '
 				WHERE topic_id = ' . (int) $shadow_topic_id;
 			$this->db->sql_query($sql);
@@ -424,7 +424,7 @@ class qte
 			trigger_error($this->language->lang('NO_TOPIC_SELECTED'));
 		}
 
-		if (!phpbb_check_ids($topic_ids, $this->tables['topics'], 'topic_id'))
+		if (!phpbb_check_ids($topic_ids, $this->table_prefix . 'topics', 'topic_id'))
 		{
 			return;
 		}
@@ -448,7 +448,7 @@ class qte
 		}
 
 		$sql = 'SELECT topic_id, forum_id, topic_title, topic_attr_id
-			FROM ' . $this->tables['topics'] . '
+			FROM ' . $this->table_prefix . 'topics
 			WHERE ' . $this->db->sql_in_set('topic_id', array_map('intval', $topic_ids));
 		$result = $this->db->sql_query($sql);
 
@@ -467,13 +467,13 @@ class qte
 		}
 		$this->db->sql_freeresult($result);
 
-		$sql = 'UPDATE ' . $this->tables['topics'] . '
+		$sql = 'UPDATE ' . $this->table_prefix . 'topics
 			SET ' . $this->db->sql_build_array('UPDATE', $fields) . '
 			WHERE ' . $this->db->sql_in_set('topic_id', array_map('intval', $topic_ids));
 		$this->db->sql_query($sql);
 
 		$sql = 'SELECT topic_id
-			FROM ' . $this->tables['topics'] . '
+			FROM ' . $this->table_prefix . 'topics
 			WHERE ' . $this->db->sql_in_set('topic_moved_id', array_map('intval', $topic_ids));
 		$result = $this->db->sql_query($sql);
 		$shadow_topic_ids = [];
@@ -485,7 +485,7 @@ class qte
 
 		if (count($shadow_topic_ids))
 		{
-			$sql = 'UPDATE ' . $this->tables['topics'] . '
+			$sql = 'UPDATE ' . $this->table_prefix . 'topics
 				SET ' . $this->db->sql_build_array('UPDATE', $fields) . '
 				WHERE ' . $this->db->sql_in_set('topic_id', array_map('intval', $shadow_topic_ids));
 			$this->db->sql_query($sql);
@@ -535,7 +535,7 @@ class qte
 		if (($this->_attr = $this->cache->get('_attr')) === false)
 		{
 			$sql = 'SELECT *
-				FROM ' . $this->tables['topics_attr'] . '
+				FROM ' . $this->table_prefix . 'topics_attr
 				ORDER BY left_id ASC';
 			$result = $this->db->sql_query($sql);
 			$this->_attr = [];

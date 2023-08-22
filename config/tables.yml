@@ -1,2 +1,0 @@
-parameters:
-    tables.topics_attr: '%core.table_prefix%topics_attr'

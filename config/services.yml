@@ -1,13 +1,10 @@
-imports:
-    - { resource: tables.yml }
-
 services:
     _defaults:
         autowire: true
         bind:
             $root_path: '%core.root_path%'
             $php_ext: '%core.php_ext%'
-            $tables: '%tables%'
+            $table_prefix: '%core.table_prefix%'
 
     kaileymsnay.qte.controller.acp:
         class: kaileymsnay\qte\controller\acp_controller

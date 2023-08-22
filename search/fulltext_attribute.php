@@ -18,21 +18,21 @@ class fulltext_attribute extends \phpbb\search\base
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
-	/** @var array */
-	protected $tables;
+	/** @var string */
+	protected $table_prefix;
 
 	/**
 	 * Constructor
 	 *
 	 * @param \phpbb\config\config               $config
 	 * @param \phpbb\db\driver\driver_interface  $db
-	 * @param array                              $tables
+	 * @param string                             $table_prefix
 	 */
-	public function __construct(\phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, $tables)
+	public function __construct(\phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, $table_prefix)
 	{
 		$this->config = $config;
 		$this->db = $db;
-		$this->tables = $tables;
+		$this->table_prefix = $table_prefix;
 	}
 
 	/**
@@ -87,12 +87,12 @@ class fulltext_attribute extends \phpbb\search\base
 		switch ($sql_sort[0])
 		{
 			case 'u':
-				$sql_sort_table = $this->tables['users'] . ' u, ';
+				$sql_sort_table = $this->table_prefix . 'users u, ';
 				$sql_sort_join = ($type == 'posts') ? ' AND u.user_id = p.poster_id ' : ' AND u.user_id = t.topic_poster ';
 			break;
 
 			case 'f':
-				$sql_sort_table = $this->tables['forums'] . ' f, ';
+				$sql_sort_table = $this->table_prefix . 'forums f, ';
 				$sql_sort_join = ' AND f.forum_id = p.forum_id ';
 			break;
 		}
@@ -106,7 +106,7 @@ class fulltext_attribute extends \phpbb\search\base
 		if ($type == 'posts')
 		{
 			$sql = "SELECT {$calc_results}p.post_id
-				FROM " . $sql_sort_table . $this->tables['posts'] . ' p, ' . $this->tables['topics'] . " t
+				FROM " . $sql_sort_table . $this->table_prefix . 'posts p, ' . $this->table_prefix . "topics t
 				WHERE $sql_attribute
 					$sql_topic_id
 					$sql_firstpost
@@ -120,7 +120,7 @@ class fulltext_attribute extends \phpbb\search\base
 		else
 		{
 			$sql = "SELECT {$calc_results}t.topic_id
-				FROM " . $sql_sort_table . $this->tables['topics'] . ' t, ' . $this->tables['posts'] . " p
+				FROM " . $sql_sort_table . $this->table_prefix . 'topics t, ' . $this->table_prefix . "posts p
 				WHERE $sql_attribute
 					$sql_topic_id
 					$sql_firstpost

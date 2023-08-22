@@ -42,8 +42,8 @@ class acp_controller
 	/** @var string */
 	protected $php_ext;
 
-	/** @var array */
-	protected $tables;
+	/** @var string */
+	protected $table_prefix;
 
 	/** @var \kaileymsnay\qte\qte */
 	protected $qte;
@@ -66,11 +66,11 @@ class acp_controller
 	 * @param \phpbb\user                           $user
 	 * @param string                                $root_path
 	 * @param string                                $php_ext
-	 * @param array                                 $tables
+	 * @param string                                $table_prefix
 	 * @param \kaileymsnay\qte\qte                  $qte
 	 * @param \phpbb\db\migration\tool\permission   $migrator_tool_permission
 	 */
-	public function __construct(\phpbb\cache\driver\driver_interface $cache, \phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, \phpbb\log\log $log, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, $root_path, $php_ext, $tables, \kaileymsnay\qte\qte $qte, \phpbb\db\migration\tool\permission $migrator_tool_permission)
+	public function __construct(\phpbb\cache\driver\driver_interface $cache, \phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, \phpbb\log\log $log, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, $root_path, $php_ext, $table_prefix, \kaileymsnay\qte\qte $qte, \phpbb\db\migration\tool\permission $migrator_tool_permission)
 	{
 		$this->cache = $cache;
 		$this->db = $db;
@@ -81,7 +81,7 @@ class acp_controller
 		$this->user = $user;
 		$this->root_path = $root_path;
 		$this->php_ext = $php_ext;
-		$this->tables = $tables;
+		$this->table_prefix = $table_prefix;
 		$this->qte = $qte;
 		$this->migrator_tool_permission = $migrator_tool_permission;
 	}
@@ -190,7 +190,7 @@ class acp_controller
 
 						if ($attr_id)
 						{
-							$sql = 'UPDATE ' . $this->tables['topics_attr'] . '
+							$sql = 'UPDATE ' . $this->table_prefix . 'topics_attr
 								SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . '
 								WHERE attr_id = ' . (int) $attr_id;
 							$this->db->sql_query($sql);
@@ -201,7 +201,7 @@ class acp_controller
 						else
 						{
 							$sql = 'SELECT MAX(right_id) AS right_id
-								FROM ' . $this->tables['topics_attr'];
+								FROM ' . $this->table_prefix . 'topics_attr';
 							$result = $this->db->sql_query($sql);
 							$right_id = (int) $this->db->sql_fetchfield('right_id');
 							$this->db->sql_freeresult($result);
@@ -209,7 +209,7 @@ class acp_controller
 							$sql_ary['left_id'] = ($right_id + 1);
 							$sql_ary['right_id'] = ($right_id + 2);
 
-							$sql = 'INSERT INTO ' . $this->tables['topics_attr'] . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
+							$sql = 'INSERT INTO ' . $this->table_prefix . 'topics_attr ' . $this->db->sql_build_array('INSERT', $sql_ary);
 							$this->db->sql_query($sql);
 							$attr_id = $this->db->sql_nextid();
 
@@ -287,7 +287,7 @@ class acp_controller
 				if (confirm_box(true))
 				{
 					$sql = 'SELECT topic_id, topic_attr_id
-						FROM ' . $this->tables['topics'] . '
+						FROM ' . $this->table_prefix . 'topics
 						WHERE topic_attr_id = ' . (int) $attr_id;
 					$result = $this->db->sql_query($sql);
 					$topic_id_ary = [];
@@ -305,14 +305,14 @@ class acp_controller
 							'topic_attr_time'	=> 0,
 						];
 
-						$sql = 'UPDATE ' . $this->tables['topics'] . '
+						$sql = 'UPDATE ' . $this->table_prefix . 'topics
 							SET ' . $this->db->sql_build_array('UPDATE', $fields) . '
 							WHERE ' . $this->db->sql_in_set('topic_id', array_map('intval', $topic_id_ary));
 						$this->db->sql_query($sql);
 					}
 
 					$sql = 'SELECT attr_name
-						FROM ' . $this->tables['topics_attr'] . '
+						FROM ' . $this->table_prefix . 'topics_attr
 						WHERE attr_id = ' . (int) $attr_id;
 					$result = $this->db->sql_query($sql);
 					$attr_name = (string) $this->db->sql_fetchfield('attr_name');
@@ -322,7 +322,7 @@ class acp_controller
 
 					$this->migrator_tool_permission->remove('f_qte_attr_' . $attr_id, false);
 
-					$sql = 'DELETE FROM ' . $this->tables['topics_attr'] . '
+					$sql = 'DELETE FROM ' . $this->table_prefix . 'topics_attr
 						WHERE attr_id = ' . (int) $attr_id;
 					$this->db->sql_query($sql);
 
@@ -362,7 +362,7 @@ class acp_controller
 				}
 
 				$sql = 'SELECT *
-					FROM ' . $this->tables['topics_attr'] . '
+					FROM ' . $this->table_prefix . 'topics_attr
 					WHERE attr_id = ' . (int) $attr_id;
 				$result = $this->db->sql_query($sql);
 				$row = $this->db->sql_fetchrow($result);
@@ -393,7 +393,7 @@ class acp_controller
 		]);
 
 		$sql = 'SELECT topic_attr_id, COUNT(topic_id) AS total_topics
-			FROM ' . $this->tables['topics'] . '
+			FROM ' . $this->table_prefix . 'topics
 			GROUP BY topic_attr_id';
 		$result = $this->db->sql_query($sql);
 		$stats = [];
@@ -406,7 +406,7 @@ class acp_controller
 		$this->db->sql_freeresult($result);
 
 		$sql = 'SELECT *
-			FROM ' . $this->tables['topics_attr'] . '
+			FROM ' . $this->table_prefix . 'topics_attr
 			ORDER BY left_id';
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
@@ -441,7 +441,7 @@ class acp_controller
 
 	protected function _get_attr_info($attr_id)
 	{
-		$sql = 'SELECT * FROM ' . $this->tables['topics_attr'] . '
+		$sql = 'SELECT * FROM ' . $this->table_prefix . 'topics_attr
 			WHERE attr_id = ' . (int) $attr_id;
 		$result = $this->db->sql_query($sql);
 		$attr = $this->db->sql_fetchrow($result);
@@ -453,7 +453,7 @@ class acp_controller
 	protected function qte_move($attr_row, $action = 'move_up', $steps = 1)
 	{
 		$sql = 'SELECT attr_id, attr_name, left_id, right_id
-			FROM ' . $this->tables['topics_attr'] . "
+			FROM ' . $this->table_prefix . "topics_attr
 			WHERE " . (($action == 'move_up') ? "right_id < {$attr_row['right_id']} ORDER BY right_id DESC" : "left_id > {$attr_row['left_id']} ORDER BY left_id ASC");
 		$result = $this->db->sql_query_limit($sql, $steps);
 		$target = [];
@@ -491,7 +491,7 @@ class acp_controller
 			$move_up_right = $target['right_id'];
 		}
 
-		$sql = 'UPDATE ' . $this->tables['topics_attr'] . "
+		$sql = 'UPDATE ' . $topics_attr . "topics_attr
 			SET left_id = left_id + CASE
 				WHEN left_id BETWEEN {$move_up_left} AND {$move_up_right} THEN -{$diff_up}
 				ELSE {$diff_down}
@@ -545,7 +545,7 @@ class acp_controller
 		$old_id = $auth_admin->acl_options['id'][$copy_from];
 		$new_id = $auth_admin->acl_options['id'][$auth_option];
 
-		$tables = [$this->tables['acl_groups'], $this->tables['acl_roles_data'], $this->tables['acl_users']];
+		$tables = [$topics_attr . 'acl_groups', $topics_attr . 'acl_roles_data', $topics_attr . 'acl_users'];
 
 		foreach ($tables as $table)
 		{
