@@ -559,12 +559,12 @@ class acp_controller
 
 			$sql = 'SELECT *
 				FROM ' . $table . '
-				WHERE auth_option_id = ' . $old_id;
+				WHERE auth_option_id = ' . (int) $old_id;
 			$result = $this->db->sql_query($sql);
 			$sql_ary = [];
 			while ($row = $this->db->sql_fetchrow($result))
 			{
-				$row['auth_option_id'] = $new_id;
+				$row['auth_option_id'] = (int) $new_id;
 				$sql_ary[] = $row;
 			}
 			$this->db->sql_freeresult($result);

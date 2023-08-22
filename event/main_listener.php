@@ -657,7 +657,7 @@ class main_listener implements EventSubscriberInterface
 		// Check if source forum exists
 		$sql = 'SELECT forum_name
 			FROM ' . $this->tables['forums'] . '
-			WHERE forum_id = ' . $src_forum_id;
+			WHERE forum_id = ' . (int) $src_forum_id;
 		$result = $this->db->sql_query($sql);
 		$src_forum_name = $this->db->sql_fetchfield('forum_name');
 		$this->db->sql_freeresult($result);

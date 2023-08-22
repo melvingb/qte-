@@ -381,7 +381,7 @@ class qte
 		{
 			$sql = 'UPDATE ' . $this->tables['topics'] . '
 				SET ' . $this->db->sql_build_array('UPDATE', $fields) . '
-				WHERE topic_id = ' . $shadow_topic_id;
+				WHERE topic_id = ' . (int) $shadow_topic_id;
 			$this->db->sql_query($sql);
 		}
 
