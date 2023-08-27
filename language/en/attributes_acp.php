@@ -53,7 +53,7 @@ $lang = array_merge($lang, [
 	'QTE_DATE'						=> 'Attribute date format',
 	'QTE_DATE_EXPLAIN'				=> 'The syntax used is identical to the PHP <a href="http://www.php.net/date">date()</a> function.',
 	'QTE_COLOUR'					=> 'Attribute colour',
-	'QTE_COLOUR_EXPLAIN'			=> 'Enter a value directly.<br />Example: ff0000',
+	'QTE_COLOUR_EXPLAIN'			=> 'Select a value from the <strong>colour picker</strong> or enter it directly.',
 	'QTE_USER_COLOUR'				=> 'Colour the username who applied the attribute',
 	'QTE_USER_COLOUR_EXPLAIN'		=> 'If you use the <strong>%mod%</strong> argument and the option is enabled, the user group colour will be applied.',
 	'QTE_COPY_AUTHS'				=> 'Copy permissions from',

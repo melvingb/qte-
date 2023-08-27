@@ -45,7 +45,12 @@
 
 		<dl>
 			<dt><label for="attr_colour">{{ lang('QTE_COLOUR') ~ lang('COLON') }}</label><br /><span>{{ lang('QTE_COLOUR_EXPLAIN') }}</span></dt>
-			<dd><input type="text" class="text post color {required:false,caps:false}" name="attr_colour" id="attr_colour" value="{{ ATTR_COLOUR }}" maxlength="6" /></dd>
+			<dd>
+				<input name="attr_colour" type="text" id="attr_colour" value="{{ ATTR_COLOUR }}" size="6" maxlength="6" />
+				{% if ATTR_COLOUR %}&nbsp;<span style="background-color: #{{ ATTR_COLOUR }}">&nbsp; &nbsp;</span>{% endif %}&nbsp;&nbsp;<span>
+				[ <a href="#" id="color_palette_toggle">{{ lang('COLOUR_SWATCH') }}</a> ]</span>
+				<div id="color_palette_placeholder" style="display: none;" data-color-palette="h" data-height="12" data-width="15" data-target="#attr_colour"></div>
+			</dd>
 		</dl>
 
 		<dl>
