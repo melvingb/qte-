@@ -7,3 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 ## 1.0.0-dev
 
 - Initial release
+
+## 1.0.0-alpha
+
+- Fix language keys on ACP pages
+- Fix possible SQL injection
+- Use table_prefix for SQL statements
