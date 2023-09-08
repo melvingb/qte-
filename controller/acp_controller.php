@@ -491,7 +491,7 @@ class acp_controller
 			$move_up_right = $target['right_id'];
 		}
 
-		$sql = 'UPDATE ' . $topics_attr . "topics_attr
+		$sql = 'UPDATE ' . $this->table_prefix . "topics_attr
 			SET left_id = left_id + CASE
 				WHEN left_id BETWEEN {$move_up_left} AND {$move_up_right} THEN -{$diff_up}
 				ELSE {$diff_down}
@@ -545,7 +545,7 @@ class acp_controller
 		$old_id = $auth_admin->acl_options['id'][$copy_from];
 		$new_id = $auth_admin->acl_options['id'][$auth_option];
 
-		$tables = [$topics_attr . 'acl_groups', $topics_attr . 'acl_roles_data', $topics_attr . 'acl_users'];
+		$tables = [$this->table_prefix . 'acl_groups', $this->table_prefix . 'acl_roles_data', $this->table_prefix . 'acl_users'];
 
 		foreach ($tables as $table)
 		{
