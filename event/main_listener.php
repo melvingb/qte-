@@ -177,20 +177,23 @@ class main_listener implements EventSubscriberInterface
 	{
 		$event->update_subarray('categories', 'qte', 'ACL_CAT_QTE');
 
-		$permissions = $event['permissions'];
+		$permissions = [
+			'a_attr_manage'		=> ['lang' => 'ACL_A_ATTR_MANAGE', 'cat' => 'posting'],
+			'm_qte_attr_edit'	=> ['lang' => 'ACL_M_QTE_ATTR_EDIT', 'cat' => 'qte'],
+			'm_qte_attr_delete'	=> ['lang' => 'ACL_M_QTE_ATTR_DELETE', 'cat' => 'qte'],
+		];
 
-		$permissions['a_attr_manage'] = ['lang' => 'ACL_A_ATTR_MANAGE', 'cat' => 'posting'];
-		$permissions['m_qte_attr_edit'] = ['lang' => 'ACL_M_QTE_ATTR_EDIT', 'cat' => 'qte'];
-		$permissions['m_qte_attr_delete'] = ['lang' => 'ACL_M_QTE_ATTR_DELETE', 'cat' => 'qte'];
-
-		foreach ($this->qte->get_attr() as $attr)
+		// Add a_ and m_ permissions
+		foreach ($permissions as $key => $value)
 		{
-			$permissions += [
-				'f_qte_attr_' . $attr['attr_id'] => ['lang' => $this->language->lang('QTE_CAN_USE_ATTR', $attr['attr_name']), 'cat' => 'qte'],
-			];
+			$event->update_subarray('permissions', $key, $value);
 		}
 
-		$event['permissions'] = $permissions;
+		// Add QTE specific permissions
+		foreach ($this->qte->get_attr() as $attr)
+		{
+			$event->update_subarray('permissions', 'f_qte_attr_' . $attr['attr_id'], ['lang' => $this->language->lang('QTE_CAN_USE_ATTR', $attr['attr_name']), 'cat' => 'qte']);
+		}
 	}
 
 	public function display_forums_modify_row($event)
