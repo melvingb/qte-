@@ -1,8 +1,3 @@
-{% if not JXTOOLSJS %}
-	{% INCLUDEJS '@kaileymsnay_qte/jxtools.js' %}
-	{% DEFINE JXTOOLSJS = true %}
-{% endif %}
-
 {% if topicrow.TOPIC_ATTRIBUTE %}
 <li id="list_inner_hidden_container" jxdom-closest="div.list-inner" jxdom-find="a.topictitle" jxdom-action="before">
 <span>{{ topicrow.TOPIC_ATTRIBUTE }} </span>
