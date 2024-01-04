@@ -1,8 +1,3 @@
-{% if not JXTOOLSJS %}
-	{% INCLUDEJS '@kaileymsnay_qte/jxtools.js' %}
-	{% DEFINE JXTOOLSJS = true %}
-{% endif %}
-
 {% if TOPIC_ATTRIBUTE %}
 {% if S_WARNINGS %}
 <div id="list_inner_hidden_container" jxdom-closest="dl.details" jxdom-find="dd:nth-of-type(6)" jxdom-action="replace">

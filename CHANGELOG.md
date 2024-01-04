@@ -19,3 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - Add a colour picker to the ACP attributes page
 - Fix undefined variable error when copy permissions is selected
 - Use the '$event->update_subarray' function for permissions
+
+## 1.0.0-RC
+
+- No changes from beta
