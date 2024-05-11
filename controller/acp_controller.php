@@ -225,7 +225,7 @@ class acp_controller
 
 						$this->cache->destroy('_attr');
 
-						$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, $this->language->lang('LOG_ATTRIBUTE_' . $message, $attr_name), time());
+						$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_ATTRIBUTE_' . $message, time(), array($attr_name));
 
 						trigger_error($this->language->lang('QTE_' . $message) . adm_back_link($this->u_action));
 					}
@@ -318,7 +318,7 @@ class acp_controller
 					$attr_name = (string) $this->db->sql_fetchfield('attr_name');
 					$this->db->sql_freeresult($result);
 
-					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, $this->language->lang('LOG_ATTRIBUTE_DELETED', $attr_name), time());
+					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_ATTRIBUTE_DELETED', time(), array($attr_name));
 
 					$this->migrator_tool_permission->remove('f_qte_attr_' . $attr_id, false);
 
@@ -377,7 +377,7 @@ class acp_controller
 
 				if ($move_attr_name !== false)
 				{
-					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, $this->language->lang('LOG_ATTRIBUTE_' . strtoupper($action), $row['attr_name'], $move_attr_name), time());
+					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_ATTRIBUTE_' . strtoupper($action), time(), array($row['attr_name'], $move_attr_name));
 				}
 
 				if ($this->request->is_ajax())
