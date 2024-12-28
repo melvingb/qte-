@@ -23,3 +23,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 ## 1.0.0-RC
 
 - No changes from beta
+
+## 1.0.0
+
+- Submission to CDB
+
+## 1.0.1
+
+- Remove version from database
+- Allow topic authors to remove attributes from topics

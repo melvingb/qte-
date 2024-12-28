@@ -188,7 +188,7 @@ class qte
 
 		$this->template->assign_vars([
 			'S_QTE_SELECT'		=> ($show_select || $s_delete && ($attribute_id || !$author_id)) ? true : false,
-			'S_QTE_DELETE'		=> $s_delete,
+			'S_QTE_DELETE'		=> $s_author || $s_delete,
 			'S_QTE_EMPTY'		=> (empty($attribute_id)) ? true : false,
 			'S_QTE_SELECTED'	=> ($s_delete && ($attribute_id == self::DELETE)) ? true : false,
 			'S_QTE_KEEP'		=> !empty($attribute_id) && ($attribute_id == self::KEEP) ? true : false,
